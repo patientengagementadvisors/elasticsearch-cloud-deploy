@@ -28,6 +28,14 @@ if [ "${bootstrap_node}" == "true"  ]; then
     INITIAL_MASTER_NODES=`echo "$MASTER_IPS" | awk '{print "ip-" $0}' | tr . - | paste -sd ',' -`
 fi
 
+# Mount Volume
+if [ "${data}" == "true"  ]; then
+  mkfs -t ext4 /dev/xvdh
+  mkdir /opt/mount1
+  mount /dev/xvdh /opt/mount1
+  echo /dev/xvdh  /opt/mount1 ext4 defaults,nofail 0 2 >> /etc/fstab
+fi
+
 # Configure elasticsearch
 cat <<'EOF' >>/etc/elasticsearch/elasticsearch.yml
 cluster.name: ${es_cluster}
