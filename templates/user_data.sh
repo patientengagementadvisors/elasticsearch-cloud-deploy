@@ -28,14 +28,6 @@ if [ "${bootstrap_node}" == "true"  ]; then
     INITIAL_MASTER_NODES=`echo "$MASTER_IPS" | awk '{print "ip-" $0}' | tr . - | paste -sd ',' -`
 fi
 
-# Mount Volume
-if [ "${data}" == "true"  ]; then
-  mkfs -t ext4 /dev/xvdh
-  mkdir /opt/mount1
-  mount /dev/xvdh /opt/mount1
-  echo /dev/xvdh  /opt/mount1 ext4 defaults,nofail 0 2 >> /etc/fstab
-fi
-
 # Configure elasticsearch
 cat <<'EOF' >>/etc/elasticsearch/elasticsearch.yml
 cluster.name: ${es_cluster}
@@ -140,16 +132,6 @@ sudo chown -R elasticsearch:elasticsearch ${elasticsearch_logs_dir}
 # we are assuming volume is declared and attached when data_dir is passed to the script
 if { [ "${master}" == "true" ] || [ "${data}" == "true" ]; } && [ "${bootstrap_node}" != "true" ]; then
     sudo mkdir -p ${elasticsearch_data_dir}
-    
-    export DEVICE_NAME=$(lsblk -ip | tail -n +2 | awk '{print $1 " " ($7? "MOUNTEDPART" : "") }' | sed ':a;N;$!ba;s/\n`/ /g' | grep -v MOUNTEDPART)
-    if sudo mount -o defaults -t ext4 $DEVICE_NAME ${elasticsearch_data_dir}; then
-        echo 'Successfully mounted existing disk'
-    else
-        echo 'Trying to mount a fresh disk'
-        sudo mkfs.ext4 -m 0 -F -E lazy_itable_init=0,lazy_journal_init=0,discard $DEVICE_NAME
-        sudo mount -o defaults -t ext4 $DEVICE_NAME ${elasticsearch_data_dir} && echo 'Successfully mounted a fresh disk'
-    fi
-    echo "$DEVICE_NAME ${elasticsearch_data_dir} ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
     sudo chown -R elasticsearch:elasticsearch ${elasticsearch_data_dir}
 fi
 

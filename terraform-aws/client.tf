@@ -16,16 +16,19 @@ data "template_file" "client_userdata_script" {
     data.aws_availability_zones.available.names,
     ),
     )
-    master = "false"
-    data = "false"
-    bootstrap_node = "false"
-    aws_region = var.aws_region
-    security_enabled = var.security_enabled
-    monitoring_enabled = var.monitoring_enabled
-    masters_count = var.masters_count
-    client_user = var.client_user
-    client_pwd = random_string.vm-login-password.result
+    master                = "false"
+    data                  = "false"
+    bootstrap_node        = "false"
+    aws_region            = var.aws_region
+    security_enabled      = var.security_enabled
+    monitoring_enabled    = var.monitoring_enabled
+    masters_count         = var.masters_count
+    client_user           = var.client_user
+    client_pwd            = random_string.vm-login-password.result
     xpack_monitoring_host = var.xpack_monitoring_host
+    volume_name           = var.data_volume_name
+    mount_point           = var.data_mount_point
+    file_system           = var.data_file_system
   }
 }
 
@@ -65,12 +68,6 @@ resource "aws_autoscaling_group" "client_nodes" {
   default_cooldown = 30
   force_delete = true
   launch_configuration = aws_launch_configuration.client[0].id
-  health_check_type = var.health_check_type
-  target_group_arns = [
-    aws_lb_target_group.es_client_lb_tg8080.arn,
-    aws_lb_target_group.es_client_lb_tg3000.arn,
-    aws_lb_target_group.es_client_lb_tg9200.arn
-  ]
 
   vpc_zone_identifier = coalescelist(
   var.clients_subnet_ids,

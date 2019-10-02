@@ -27,6 +27,9 @@ data "template_file" "single_node_userdata_script" {
     client_pwd            = random_string.vm-login-password.result
     xpack_monitoring_host = var.xpack_monitoring_host
     asg_name              = ""
+    volume_name           = var.data_volume_name
+    mount_point           = var.data_mount_point
+    file_system           = var.data_file_system
   }
 }
 

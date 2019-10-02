@@ -77,6 +77,13 @@ resource "aws_security_group" "elasticsearch_clients_security_group" {
   }
 
   ingress {
+    from_port   = 9200
+    to_port     = 9200
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -163,7 +170,7 @@ resource "aws_lb_target_group" "es_client_lb_tg9200" {
   target_type = "instance"
 
   health_check {
-    path = "/es"
+    path = "/"
   }
 }
 
@@ -198,7 +205,7 @@ resource "aws_lb_target_group_attachment" "aws-lb-tg-attach-8080" {
 resource "aws_lb_target_group_attachment" "aws-lb-tg-attach-9200" {
   count            = var.clients_count
   target_group_arn = aws_lb_target_group.es_client_lb_tg9200.arn
-  target_id        = data.aws_instances.masters.ids[count.index]
+  target_id        = data.aws_instances.clients.ids[count.index]
   port             = 9200
 }
 
@@ -221,6 +228,7 @@ resource "aws_lb_listener" "es_lb_listener_80" {
 
 resource "aws_lb_listener" "es_lb_listener_443" {
   count = var.masters_count == "0" && var.datas_count == "0" ? "0" : "1"
+  depends_on = [aws_lb_target_group.es_client_lb_tg8080]
   load_balancer_arn = aws_lb.es_client_lb[count.index].arn
   port              = var.lb_port
   protocol          = "HTTPS"
@@ -235,6 +243,7 @@ resource "aws_lb_listener" "es_lb_listener_443" {
 
 resource "aws_lb_listener" "es_lb_listener_3000" {
   count = var.masters_count == "0" && var.datas_count == "0" ? "0" : "1"
+  depends_on = [aws_lb_target_group.es_client_lb_tg3000]
   load_balancer_arn = aws_lb.es_client_lb[count.index].arn
   port              = 3000
   protocol          = "HTTPS"
@@ -249,6 +258,7 @@ resource "aws_lb_listener" "es_lb_listener_3000" {
 
 resource "aws_lb_listener" "es_lb_listener_9200" {
   count = var.masters_count == "0" && var.datas_count == "0" ? "0" : "1"
+  depends_on = [aws_lb_target_group.es_client_lb_tg9200]
   load_balancer_arn = aws_lb.es_client_lb[count.index].arn
   port              = 9200
   protocol          = "HTTPS"

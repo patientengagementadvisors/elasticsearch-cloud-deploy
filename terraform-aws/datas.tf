@@ -26,6 +26,9 @@ data "template_file" "data_userdata_script" {
     client_user           = ""
     client_pwd            = ""
     xpack_monitoring_host = var.xpack_monitoring_host
+    volume_name           = var.data_volume_name
+    mount_point           = var.data_mount_point
+    file_system           = var.data_file_system
   }
 }
 
@@ -34,6 +37,43 @@ data "aws_instances" "datas" {
 
   instance_tags = {
     Name                  = format("%s-data-node", var.es_cluster)
+  }
+}
+
+data "template_file" "alias_nvme" {
+  template = file("${path.module}/../templates/ebs_alias.sh.tpl")
+  vars = {
+    volume_name = var.data_volume_name
+  }
+}
+
+data "template_file" "attach_nvme" {
+  template = file("${path.module}/../templates/ebs_mount.sh.tpl")
+
+  vars = {
+    volume_name = var.data_volume_name
+    mount_point = var.data_mount_point
+    file_system = var.data_file_system
+  }
+}
+
+data "template_cloudinit_config" "config" {
+  gzip          = false
+  base64_encode = false
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = data.template_file.alias_nvme.rendered
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = data.template_file.attach_nvme.rendered
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = data.template_file.data_userdata_script.rendered
   }
 }
 
@@ -47,7 +87,7 @@ resource "aws_launch_configuration" "data" {
   )
   associate_public_ip_address = false
   iam_instance_profile        = aws_iam_instance_profile.elasticsearch.id
-  user_data                   = data.template_file.data_userdata_script.rendered
+  user_data                   = data.template_cloudinit_config.config.rendered
   key_name                    = var.key_name
 
   ebs_optimized = var.ebs_optimized
@@ -109,7 +149,7 @@ resource "aws_ebs_volume" "elastic_data" {
 resource "aws_volume_attachment" "elastic_data_att" {
   count        = var.datas_count
   skip_destroy = true
-  device_name  = "/dev/xvdh"
+  device_name  = var.data_volume_name
   volume_id    = aws_ebs_volume.elastic_data.*.id[count.index]
   instance_id  = data.aws_instances.datas.ids[count.index]
 }

@@ -156,3 +156,18 @@ variable "lb_ssl_cert" {
   description = "SSL Certificate ARN for ES cluster url"
   default     = ""
 }
+
+variable "data_volume_name" {
+  description = "Elastic data volumes"
+  default = "/dev/xvdh"
+}
+
+variable "data_mount_point" {
+  description = "Elastic data volume mount point"
+  default = "/opt/mount1"
+}
+
+variable "data_file_system" {
+  description = "Elastic data volume file system"
+  default = "ext4"
+}

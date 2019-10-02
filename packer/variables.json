@@ -2,9 +2,10 @@
   "elasticsearch_version": "",
 
   "aws_region": "us-east-1",
-  "aws_az": "us-east-1d",
+  "aws_az": "",
 
   "vpc_id": "vpc-b9b6f9c2",
+  "subnet_id": "subnet-0969bdc9cb811bf2b",
 
   "azure_client_id": "",
   "azure_client_secret": "",

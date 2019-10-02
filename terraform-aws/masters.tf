@@ -30,6 +30,9 @@ data "template_file" "master_userdata_script" {
     client_user           = ""
     client_pwd            = ""
     xpack_monitoring_host = var.xpack_monitoring_host
+    volume_name           = var.data_volume_name
+    mount_point           = var.data_mount_point
+    file_system           = var.data_file_system
   }
 }
 
@@ -62,6 +65,9 @@ data "template_file" "bootstrap_userdata_script" {
     client_user           = ""
     client_pwd            = ""
     xpack_monitoring_host = "self"
+    volume_name           = var.data_volume_name
+    mount_point           = var.data_mount_point
+    file_system           = var.data_file_system
   }
 }
 
@@ -99,7 +105,7 @@ resource "aws_autoscaling_group" "master_nodes" {
   launch_configuration = aws_launch_configuration.master.id
 
   vpc_zone_identifier = coalescelist(var.cluster_subnet_ids, tolist(data.aws_subnet_ids.selected.ids))
-  health_check_type = var.health_check_type
+
   tag {
     key                 = "Name"
     value               = format("%s-master-node", var.es_cluster)
