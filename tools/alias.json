@@ -1,0 +1,10 @@
+{
+    "actions" : [
+
+        { "add" : { "index" : "gateway_logs_dev_v1", "alias" : "gateway_logs_dev" } },
+        { "add" : { "index" : "gateway_logs_prod_v1", "alias" : "gateway_logs_prod" } },
+        { "add" : { "index" : "rollup_logs_dev_v1", "alias" : "rollup_logs_dev" } },
+        { "add" : { "index" : "rollup_logs_prod_v1", "alias" : "rollup_logs_prod" } }
+
+    ]
+}

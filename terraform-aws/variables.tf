@@ -147,6 +147,11 @@ variable "s3_backup_bucket" {
   default     = ""
 }
 
+variable "s3_backup_bucket2" {
+  description = "S3 bucket for backups"
+  default     = ""
+}
+
 variable "hosted_zone_id" {
   description = "Elasticsearch hosted zone"
   default     = ""

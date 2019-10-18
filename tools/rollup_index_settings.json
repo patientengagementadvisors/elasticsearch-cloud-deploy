@@ -1,0 +1,39 @@
+{
+  "settings": {
+    "index.mapping.total_fields.limit": 1000,
+    "index.mapping.ignore_malformed": true,
+    "index": {
+      "number_of_shards": 8,
+      "number_of_replicas": 2,
+      "refresh_interval": "30s"
+    }
+  },
+  "mappings": {
+    "dynamic_templates": [
+      {
+        "id_as_string": {
+          "match": "*Id",
+          "mapping": {
+            "type": "keyword"
+          }
+        }
+      },
+      {
+        "date_as_date": {
+          "match": "*Date",
+          "mapping": {
+            "type": "date"
+          }
+        }
+      }
+    ],
+    "properties": {
+      "logtime": {
+        "type": "date"
+      },
+      "loggedInAt": {
+        "type": "date"
+      }
+    }
+  }
+}

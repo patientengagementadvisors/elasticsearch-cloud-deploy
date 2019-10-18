@@ -6,6 +6,14 @@ data "template_file" "data_s3_backup" {
   }
 }
 
+data "template_file" "data_s3_backup2" {
+  template = file("${path.module}/../templates/s3-backup.json")
+
+  vars = {
+    s3_backup_bucket = var.s3_backup_bucket2
+  }
+}
+
 data "template_file" "data_asg_describe" {
   template = file("${path.module}/../templates/asg-describe.json")
 }
@@ -34,6 +42,13 @@ resource "aws_iam_role_policy" "s3_backup" {
   count  = var.s3_backup_bucket != "" ? 1 : 0
   name   = "${var.es_cluster}-elasticsearch-backup-policy"
   policy = data.template_file.data_s3_backup.rendered
+  role   = aws_iam_role.elasticsearch.id
+}
+
+resource "aws_iam_role_policy" "s3_backup2" {
+  count  = var.s3_backup_bucket != "" ? 1 : 0
+  name   = "${var.es_cluster}-elasticsearch-backup2-policy"
+  policy = data.template_file.data_s3_backup2.rendered
   role   = aws_iam_role.elasticsearch.id
 }
 

@@ -1,3 +1,3 @@
 {
-  "indices": "patient_dev_v7"
+  "indices": "gateway_dev_v2,gateway_prod_v2,archive_82022b4b-a048-421c-9663-359bbcfa24b6,archive_1ade542d-3169-4593-ab4c-ee27e59e1634"
 }
