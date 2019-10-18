@@ -1,0 +1,10 @@
+{
+    "commands" : [
+        {
+          "allocate_replica" : {
+                "index" : "patient_dev_v7", "shard" : 0,
+                "node" : "ip-11-0-2-75"
+          }
+        }
+    ]
+}

@@ -4,10 +4,10 @@
     {
       "type": "amazon-ebs",
       "ami_name": "elasticsearch7-{{isotime | clean_ami_name}}",
-      "availability_zone": "{{user `aws_az`}}",
       "iam_instance_profile": "packer",
       "instance_type": "t2.micro",
-      "region": "{{user `aws_region`}}",
+      "vpc_id": "{{user `vpc_id`}}",
+      "subnet_id": "{{user `subnet_id`}}",
       "run_tags": {
         "role": "packer"
       },

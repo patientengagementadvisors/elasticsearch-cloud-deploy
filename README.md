@@ -1,4 +1,5 @@
 # Deploy Elasticsearch on the cloud easily
+### (Modified for use with PEA infrastructure)
 
 This repository contains a set of tools and scripts to deploy an Elasticsearch cluster on the cloud, using best-practices and state of the art tooling.
 

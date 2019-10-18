@@ -1,0 +1,131 @@
+{
+  "settings": {
+    "index.mapping.total_fields.limit": 10000,
+    "index.mapping.ignore_malformed": true,
+    "index": {
+      "number_of_shards": 8,
+      "number_of_replicas": 2,
+      "refresh_interval": "30s"
+    }
+  },
+  "mappings": {
+      "properties": {
+        "audit": {
+          "properties": {
+            "routingLatency": {
+              "type": "long"
+            }
+          }
+        },
+        "logtime": {
+          "type": "date"
+        },
+        "time": {
+          "type": "date"
+        }
+      },
+      "dynamic_templates": [
+        {
+          "no_doc_values": {
+            "path_match":"audit.details.detail.params.param.detail.*",
+            "match_mapping_type":"*",
+            "mapping": {
+              "type": "{dynamic_type}",
+              "doc_values": false
+            }
+          }
+        },
+        {
+          "no_norms_values": {
+            "path_match":"audit.details.detail.params.param.detail.*",
+            "match_mapping_type":"*",
+            "mapping": {
+              "type": "{dynamic_type}",
+              "norms": false
+            }
+          }
+        },
+        {
+          "geoLocation_as_geo_point": {
+            "match": "geoLocation",
+            "mapping": {
+              "type": "geo_point"
+            }
+          }
+        },
+        {
+          "signedInAt_as_date": {
+            "match": "signedInAt",
+            "mapping": {
+              "type": "date"
+            }
+          }
+        },
+        {
+          "active_as_boolean": {
+            "match": "active",
+            "mapping": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "rank_as_int": {
+            "match": "rank",
+            "mapping": {
+              "type": "integer"
+            }
+          }
+        },
+        {
+          "id_as_string": {
+            "match": "*Id",
+            "mapping": {
+              "type": "keyword"
+            }
+          }
+        },
+        {
+          "number_as_int": {
+            "match": "numberOfPills",
+            "mapping": {
+              "type": "integer"
+            }
+          }
+        },
+        {
+          "amount_as_int": {
+            "match": "*Amount",
+            "mapping": {
+              "type": "integer"
+            }
+          }
+        },
+        {
+          "openedUnixTime_as_time": {
+            "match": "openedUnixTime",
+            "mapping": {
+              "type": "date"
+            }
+          }
+        },
+        {
+          "status_as_object": {
+            "path_match": "audit.details.detail.params.detail.status",
+            "mapping": {
+              "type": "text"
+            }
+          }
+        },
+        {
+          "lengthOfStay_as_int": {
+            "match": "lengthOfStay",
+            "mapping": {
+              "type": "integer"
+            }
+          }
+        }
+      ]
+    }
+
+}
